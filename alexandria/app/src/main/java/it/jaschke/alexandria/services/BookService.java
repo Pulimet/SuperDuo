@@ -157,6 +157,12 @@ public class BookService extends IntentService {
         final String IMG_URL = "thumbnail";
 
         try {
+            if (bookJsonString == null || bookJsonString.length() < 10){
+                Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
+                messageIntent.putExtra(MainActivity.MESSAGE_KEY,getResources().getString(R.string.connection_problem));
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
+                return;
+            }
             JSONObject bookJson = new JSONObject(bookJsonString);
             JSONArray bookArray;
             if(bookJson.has(ITEMS)){
