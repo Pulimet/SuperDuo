@@ -22,6 +22,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,27 +42,23 @@ import it.jaschke.alexandria.services.BookService;
 import it.jaschke.alexandria.services.DownloadImage;
 
 
-public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AddBookFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
     private EditText editText;
+    private Button btnScan, btnSave, btnDelete;
+    private TextView tvBookTitle, tvBookSubTitle, tvAuthors, tvCategories;
+    private ImageView imgBookCover;
     private final int LOADER_ID = 1;
     private View rootView;
     private BarcodeDetector detector;
     private final String EAN_CONTENT = "eanContent";
-    private static final String SCAN_FORMAT = "scanFormat";
-    private static final String SCAN_CONTENTS = "scanContents";
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    private String mScanFormat = "Format:";
-    private String mScanContents = "Contents:";
-
     private Uri fileUri;
-    private ImageView testImg;
 
-
-    public AddBook() {
+    public AddBookFragment() {
     }
 
     @Override
@@ -75,8 +72,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
-        editText = (EditText) rootView.findViewById(R.id.ean);
-        //testImg = (ImageView) rootView.findViewById(R.id.bookCover);
+        setViews(rootView);
+
+
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -93,31 +91,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 onEditTextChange(s.toString());
             }
         });
-
-        rootView.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getAndRecognizeBarcode();
-            }
-        });
-
-        rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editText.setText("");
-            }
-        });
-
-        rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, editText.getText().toString());
-                bookIntent.setAction(BookService.DELETE_BOOK);
-                getActivity().startService(bookIntent);
-                editText.setText("");
-            }
-        });
+        btnScan.setOnClickListener(clickListener);
+        btnSave.setOnClickListener(clickListener);
+        btnDelete.setOnClickListener(clickListener);
 
         if (savedInstanceState != null) {
             editText.setText(savedInstanceState.getString(EAN_CONTENT));
@@ -128,6 +104,39 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         checkCamera();
         return rootView;
     }
+
+    private void setViews(View rootView) {
+        editText = (EditText) rootView.findViewById(R.id.ean);
+        btnScan = (Button) rootView.findViewById(R.id.scan_button);
+        btnSave = (Button) rootView.findViewById(R.id.save_button);
+        btnDelete = (Button) rootView.findViewById(R.id.delete_button);
+        tvBookTitle = (TextView) rootView.findViewById(R.id.bookTitle);
+        tvBookSubTitle = (TextView) rootView.findViewById(R.id.bookSubTitle);
+        tvAuthors = (TextView) rootView.findViewById(R.id.authors);
+        tvCategories = (TextView) rootView.findViewById(R.id.categories);
+        imgBookCover = (ImageView) rootView.findViewById(R.id.bookCover);
+    }
+
+    View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.scan_button:
+                    getAndRecognizeBarcode();
+                    break;
+                case R.id.save_button:
+                    editText.setText("");
+                    break;
+                case R.id.delete_button:
+                    Intent bookIntent = new Intent(getActivity(), BookService.class);
+                    bookIntent.putExtra(BookService.EAN, editText.getText().toString());
+                    bookIntent.setAction(BookService.DELETE_BOOK);
+                    getActivity().startService(bookIntent);
+                    editText.setText("");
+                    break;
+            }
+        }
+    };
 
     private void showToast(String msg) {
         Toast.makeText(getActivity().getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
@@ -178,7 +187,6 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
     private void recognizeAndUpdateIsbn() {
         Bitmap myBitmap = getBitmap();
-        //testImg.setImageBitmap(myBitmap);
 
         if (myBitmap != null) {
             Frame frame = new Frame.Builder().setBitmap(myBitmap).build();
@@ -206,19 +214,12 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             int imageHeight = options.outHeight;
             int imageWidth = options.outWidth;
             String imageType = options.outMimeType;
-            Log.d("ZAQ", "imageWidth: " + imageWidth);
-            Log.d("ZAQ", "imageHeight: " + imageHeight);
             int sampleSize = 1;
             while (imageHeight > 3000 || imageWidth > 3000) {
                 imageHeight /= 2;
                 imageWidth /= 2;
                 sampleSize++;
             }
-
-            Log.d("ZAQ", "-------------------------------");
-            Log.d("ZAQ", "sampleSize: " + sampleSize);
-            Log.d("ZAQ", "imageWidth: " + imageWidth);
-            Log.d("ZAQ", "imageHeight: " + imageHeight);
 
             options.inSampleSize = sampleSize;
             options.inJustDecodeBounds = false;
@@ -236,17 +237,21 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         int len = isbnString.length();
         if (len == 10 && !isbnString.startsWith("978")) {
             isbnString = "978" + isbnString;
-        }
-        if (len < 13) {
+        } else if (len < 13) {
             clearFields();
             return;
         }
+
         //Once we have an ISBN, start a book intent
+        startFetchBookIntent(isbnString);
+    }
+
+    private void startFetchBookIntent(String isbnString) {
         Intent bookIntent = new Intent(getActivity(), BookService.class);
         bookIntent.putExtra(BookService.EAN, isbnString);
         bookIntent.setAction(BookService.FETCH_BOOK);
         getActivity().startService(bookIntent);
-        AddBook.this.restartLoader();
+        AddBookFragment.this.restartLoader();
     }
 
     private void restartLoader() {
@@ -278,29 +283,24 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             return;
         }
 
-        String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
-        ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
-
-        String bookSubTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.SUBTITLE));
-        ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
+        tvBookTitle.setText(data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE)));
+        tvBookSubTitle.setText(data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.SUBTITLE)));
+        tvCategories.setText(data.getString(data.getColumnIndex(AlexandriaContract.CategoryEntry.CATEGORY)));
 
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
         if (authors != null) {
             String[] authorsArr = authors.split(",");
-            ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-            ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
+            tvAuthors.setLines(authorsArr.length);
+            tvAuthors.setText(authors.replace(",", "\n"));
         }
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
         if (Patterns.WEB_URL.matcher(imgUrl).matches()) {
-            new DownloadImage((ImageView) rootView.findViewById(R.id.bookCover)).execute(imgUrl);
-            rootView.findViewById(R.id.bookCover).setVisibility(View.VISIBLE);
+            new DownloadImage(imgBookCover).execute(imgUrl);
+            imgBookCover.setVisibility(View.VISIBLE);
         }
 
-        String categories = data.getString(data.getColumnIndex(AlexandriaContract.CategoryEntry.CATEGORY));
-        ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
-
-        rootView.findViewById(R.id.save_button).setVisibility(View.VISIBLE);
-        rootView.findViewById(R.id.delete_button).setVisibility(View.VISIBLE);
+        btnSave.setVisibility(View.VISIBLE);
+        btnDelete.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -309,13 +309,13 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     }
 
     private void clearFields() {
-        ((TextView) rootView.findViewById(R.id.bookTitle)).setText("");
-        ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText("");
-        ((TextView) rootView.findViewById(R.id.authors)).setText("");
-        ((TextView) rootView.findViewById(R.id.categories)).setText("");
+        tvBookTitle.setText("");
+        tvBookSubTitle.setText("");
+        tvAuthors.setText("");
+        tvCategories.setText("");
         rootView.findViewById(R.id.bookCover).setVisibility(View.INVISIBLE);
-        rootView.findViewById(R.id.save_button).setVisibility(View.INVISIBLE);
-        rootView.findViewById(R.id.delete_button).setVisibility(View.INVISIBLE);
+        btnSave.setVisibility(View.INVISIBLE);
+        btnDelete.setVisibility(View.INVISIBLE);
     }
 
     @Override
