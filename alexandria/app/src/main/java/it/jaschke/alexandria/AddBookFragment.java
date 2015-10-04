@@ -147,14 +147,14 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
                 .setBarcodeFormats(Barcode.EAN_13)
                 .build();
         if (!detector.isOperational()) {
-            showToast("Could not set up the detector!");
+            showToast(getResources().getString(R.string.toast_detector_fail));
             detector = null;
         }
     }
 
     private void checkCamera() {
         if (!getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            showToast("No camera on this device");
+            showToast(getResources().getString(R.string.toast_no_camera));
         }
     }
 
@@ -177,10 +177,10 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
                 recognizeAndUpdateIsbn();
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // User cancelled the image capture
-                showToast("Please try again");
+                showToast(getResources().getString(R.string.toast_try_again));
             } else {
                 // Image capture failed, advise user
-                showToast("Please try again");
+                showToast(getResources().getString(R.string.toast_try_again));
             }
         }
     }
@@ -196,7 +196,7 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
                 Barcode thisCode = barcodes.valueAt(0);
                 editText.setText(thisCode.rawValue);
             } else {
-                showToast("Barcode not recognized. Please try again.");
+                showToast(getResources().getString(R.string.toast_not_recognized));
             }
         } else {
             showToast("myBitmap == null");
@@ -226,7 +226,7 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
             return BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(), null, options);
         } catch (IOException e) {
             e.printStackTrace();
-            showToast("Please try again");
+            showToast(getResources().getString(R.string.toast_try_again));
         }
         return null;
     }

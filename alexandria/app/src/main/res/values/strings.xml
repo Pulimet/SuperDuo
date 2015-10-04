@@ -29,4 +29,9 @@
 <!-- TODO: Remove or change this placeholder text -->
     <string name="about_text">This application gets book information from a Google API. All titles, cover images, and author information come from there.
     The original version of this app was built by Sascha Jaschke, and a modified version is given to students in the Udacity Android Nanodegree program. </string>
+
+    <string name="toast_detector_fail">Could not set up the detector!</string>
+    <string name="toast_no_camera">No camera on this device</string>
+    <string name="toast_try_again">Please try again</string>
+    <string name="toast_not_recognized">Barcode not recognized. Please try again."</string>
 </resources>
