@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="barqsoft.footballscores"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="barqsoft.footballscores"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission
         android:name="android.permission.INTERNET"
@@ -35,6 +36,27 @@
                 android:value="barqsoft.footballscores.MainActivity"/>
         </activity>
         <service android:name=".service.myFetchService"/>
-    </application>
 
+        <receiver android:name=".widget.SimpleWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/simple_widget_info"/>
+        </receiver>
+
+        <receiver android:name=".widget.CollectionWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/collection_widget_info"/>
+        </receiver>
+        <service
+            android:name=".widget.CollectionWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+    </application>
 </manifest>

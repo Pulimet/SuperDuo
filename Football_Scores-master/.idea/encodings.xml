@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/app/src/main/java/barqsoft/footballscores/widget/CollectionWidgetProvider.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/barqsoft/footballscores/widget/CollectionWidgetService.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/barqsoft/footballscores/widget/SimpleWidgetProvider.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable-nodpi/simple.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_collection_widget.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/widget_collection.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/widget_simple.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/xml/collection_widget_info.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/xml/simple_widget_info.xml" charset="UTF-8" />
+  </component>
+</project>

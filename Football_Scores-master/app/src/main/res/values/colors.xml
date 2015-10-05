@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="widget_bg">#88000000</color>
+
     <color name="blue01">#0099CC</color>
     <color name="blue02">#079DD0</color>
     <color name="blue03">#0FA1D3</color>
     <color name="blue04">#16A5D7</color>
-    <color name="blue05">#1DA9DA</color>
+    <color name="blue05">#1DA9DA</color>S
     <color name="blue06">#24ADDE</color>
     <color name="blue07">#2CB1E1</color>
     <color name="blue08">#33B5E5</color>

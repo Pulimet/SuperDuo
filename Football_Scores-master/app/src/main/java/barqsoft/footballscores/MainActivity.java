@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import barqsoft.footballscores.widget.CollectionWidgetService;
+
 public class MainActivity extends ActionBarActivity {
     public static int selected_match_id;
     public static int current_fragment = 2;
@@ -24,6 +26,14 @@ public class MainActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, my_main)
                     .commit();
+        }
+
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(CollectionWidgetService.EXTRA_SHARE_DATA)) {
+            String shareExtra = intent.getStringExtra(CollectionWidgetService.EXTRA_SHARE_DATA);
+            if (shareExtra.length() > 0) {
+                startActivity(ScoresAdapter.createShareForecastIntent(shareExtra));
+            }
         }
     }
 
