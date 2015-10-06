@@ -25,6 +25,7 @@
     <string name="action_share" translatable="false">Share</string>
     <string name="back_button" translatable="false">go back</string>
     <string name="share_text" translatable="false">A must read book: </string>
+    <string name="no_data" translatable="false">No data about authors</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="about_text" translatable="false">This application gets book information from a Google API. All titles, cover images, and author information come from there.
