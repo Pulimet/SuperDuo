@@ -56,7 +56,8 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    private Uri fileUri;
+    private static Uri fileUri;
+    private static String fileUriStr;
 
     public AddBookFragment() {
     }
@@ -164,9 +165,31 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
             Log.d("ZAQ", "fileUri: " + fileUri.toString());
+            fileUriStr = fileUri.toString();
             intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
             // start the image capture Intent
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (fileUri != null) {
+            Log.d("ZAQ", "onPause fileUri: " + fileUri.toString());
+        } else {
+            Log.d("ZAQ", "onPause fileUri: null");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (fileUri != null) {
+            Log.d("ZAQ", "onResume fileUri: " + fileUri.toString());
+        } else {
+            Log.d("ZAQ", "onResume fileUri: null");
+            Log.d("ZAQ", "fileUriStr: " + fileUriStr);
         }
     }
 
@@ -199,7 +222,7 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
                 showToast(getResources().getString(R.string.toast_not_recognized));
             }
         } else {
-            showToast("myBitmap == null");
+            showToast(getResources().getString(R.string.toast_try_again) + " (bitmap  = null)");
         }
 
     }
@@ -208,7 +231,13 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            AssetFileDescriptor fileDescriptor = getActivity().getContentResolver().openAssetFileDescriptor(fileUri, "r");
+            AssetFileDescriptor fileDescriptor;
+            if (fileUri != null) {
+                fileDescriptor = getActivity().getContentResolver().openAssetFileDescriptor(fileUri, "r");
+            } else {
+                Log.d("ZAQ", "fileUri: null");
+                return null;
+            }
             if (fileDescriptor == null) return null;
             BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(), null, options);
             int imageHeight = options.outHeight;
