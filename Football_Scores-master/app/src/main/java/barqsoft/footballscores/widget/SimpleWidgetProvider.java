@@ -40,14 +40,17 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_simple);
             views.setOnClickPendingIntent(R.id.linLayout, pendingIntent);
 
-            if (cursor != null) {
-                cursor.moveToFirst();
+            if (cursor != null &&  cursor.moveToFirst()) {
                 views.setTextViewText(R.id.home_name, cursor.getString(ScoresAdapter.COL_HOME));
                 views.setTextViewText(R.id.away_name, cursor.getString(ScoresAdapter.COL_AWAY));
                 views.setTextViewText(R.id.score_textview, Utilies.getScores(cursor.getInt(ScoresAdapter.COL_HOME_GOALS), cursor.getInt(ScoresAdapter.COL_AWAY_GOALS)));
                 views.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(cursor.getString(ScoresAdapter.COL_HOME), context));
                 views.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(cursor.getString(ScoresAdapter.COL_AWAY), context));
                 views.setTextViewText(R.id.data_textview, cursor.getString(ScoresAdapter.COL_MATCHTIME));
+            } else {
+                views.setTextViewText(R.id.home_name, context.getResources().getString(R.string.no_games));
+                views.setTextViewText(R.id.away_name, context.getResources().getString(R.string.no_games));
+                views.setTextViewText(R.id.data_textview, "");
             }
 
 

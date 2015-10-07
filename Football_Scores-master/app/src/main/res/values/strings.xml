@@ -57,6 +57,7 @@
 
     <string name="title_widget" translatable="false">Scores</string>
     <string name="widget_minus" translatable="false">-</string>
+    <string name="no_games" translatable="false">Nothing today</string>
 
 
 
